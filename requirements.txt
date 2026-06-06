@@ -1,0 +1,12 @@
+# Core pipeline (kept deliberately small for edge deployment)
+ultralytics>=8.1.0          # YOLOv8 detector + training
+numpy>=1.23
+scipy>=1.9                  # Kalman + Hungarian assignment (no `lap` build needed)
+opencv-python>=4.7          # optical-flow CMC, drawing, video IO
+                            # (use opencv-python-headless on servers without a display)
+
+# Optional: tiled inference for maximum tiny-object recall
+sahi>=0.11.14
+
+# torch / torchvision are pulled in by ultralytics. On a Jetson, install the
+# NVIDIA-provided torch wheel for your JetPack instead of the PyPI one.
