@@ -122,6 +122,44 @@ The confusion matrix indicates that the main error mode is a small number of mis
 
 Tracking behavior on the submitted sequence is described above: 44 unique IDs over 275 frames with up to about 29 vehicles at once, and stable IDs for parked vehicles across the clip despite continuous panning, which is the direct effect of the camera-motion compensation.
 
+### Measured run (verbatim)
+
+The following is the exact console output of the run that produced the submitted video, on the uav0000339_00001_v sequence with the fine-tuned model at input size 1024 and FP16. It is included unedited for reproducibility. The per-frame readout settles around 9 to 10 frames per second, and the final report gives a pipeline rate of 9.64, a detector rate of 42.58 in isolation, and a tracker rate of 28.04, with the detector taking about 23 milliseconds per frame and the tracker about 36, which is the basis for the statement that the detector is not the bottleneck.
+
+```
+weights: runs/detect/runs/aerial_guardian/yolov8_visdrone_vehicle/weights/best.pt
+sequence: /content/drive/MyDrive/VisDrone2019-MOT-val(1)/VisDrone2019-MOT-val/sequences/uav0000339_00001_v
+Hardware: {"python": "3.12.13", "platform": "Linux-6.6.122+-x86_64-with-glibc2.35", "torch": "2.11.0+cu128", "device": "Tesla T4", "cuda": "12.8"}
+Running...
+  frame 50/275   ~7.0 FPS
+  frame 100/275  ~8.7 FPS
+  frame 150/275  ~8.9 FPS
+  frame 200/275  ~9.1 FPS
+  frame 250/275  ~9.5 FPS
+
+================  REPORT  ================
+{
+  "hardware": {
+    "python": "3.12.13",
+    "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+    "torch": "2.11.0+cu128",
+    "device": "Tesla T4",
+    "cuda": "12.8"
+  },
+  "frames": 275,
+  "detections_run": 275,
+  "detect_every": 1,
+  "wall_seconds": 28.53,
+  "pipeline_fps": 9.64,
+  "detector_fps": 42.58,
+  "tracker_fps": 28.04,
+  "detector_ms_per_frame": 23.48,
+  "tracker_ms_per_frame": 35.66,
+  "output": "out_finetuned.mp4"
+}
+==========================================
+```
+
 ## Reproduce
 
 There are two paths. The quick path produces a tracked video in minutes with no training. The full path fine-tunes the detector first and is the intended submission.
