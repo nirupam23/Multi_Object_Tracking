@@ -10,7 +10,7 @@ A single-class vehicle detector fine-tuned on VisDrone, reaching mAP@0.5 of 0.96
 
 A camera-motion-compensated ByteTrack tracker that keeps identities stable while the drone pans, demonstrated on a real sequence where parked vehicles retain their IDs across the entire clip.
 
-An appearance-free, dependency-light design (no re-identification network, Hungarian assignment via SciPy rather than a compiled package) that runs on CPU and exports cleanly to ONNX and TensorRT for edge devices.
+An appearance-free, dependency-light design (no re-identification network, Hungarian assignment via SciPy rather than a compiled package) that runs on CPU and exports to ONNX, with a documented TensorRT path for edge devices.
 
 Explicit speed and precision controls (model size, input resolution, FP16, sliced inference, and detector frame-skip) with a built-in profiler that separates detector time from tracker time.
 
@@ -110,7 +110,7 @@ The runner times the detector and the tracker separately and prints a report wit
 
 ## Training details
 
-The detector was fine-tuned from YOLOv8s COCO weights for 20 epochs at input size 1024 with batch size 16 on a single Tesla T4. The optimizer was selected automatically with a cosine learning-rate schedule, an initial learning rate of 0.01, and early-stopping patience of 20. Augmentations followed the aerial recipe above. Training took about 96 minutes.
+The detector was fine-tuned from YOLOv8s COCO weights for 20 epochs at input size 1024 with batch size 16 on a single Tesla T4. The optimizer was left on automatic selection, which chose AdamW at a learning rate of 0.002 (overriding the requested 0.01), with a cosine learning-rate schedule, a short warmup, and early-stopping patience of 20. Training ran under automatic mixed precision. Augmentations followed the aerial recipe above. Training took about 96 minutes.
 
 The training curves show smooth convergence. Box, classification, and distribution-focal losses on both the training and validation streams decreased steadily and flattened toward the final epochs, while precision, recall, and both mAP measures rose quickly in the first ten epochs and plateaued by around epoch 15. The validation mAP at IoU 0.5 improved from 0.83 at the first epoch to 0.965 at the last.
 
@@ -192,7 +192,7 @@ The runner prints a JSON report with the measured frames per second and the hard
 
 ## Summary report
 
-Architecture and small-object handling. The architecture is a fine-tuned YOLOv8 detector feeding a ByteTrack tracker. Small objects are handled by domain fine-tuning, high input resolution, an optional stride-4 head, and optional sliced inference, supported by an aerial augmentation recipe. The detector stays small and exports easily to ONNX and TensorRT.
+Architecture and small-object handling. The architecture is a fine-tuned YOLOv8 detector feeding a ByteTrack tracker. Small objects are handled by domain fine-tuning, high input resolution, an optional stride-4 head, and optional sliced inference, supported by an aerial augmentation recipe. The detector stays small and exports to ONNX, with a TensorRT export path for edge deployment.
 
 Handling ID switches from drone ego-motion and occlusion. Stability comes from ByteTrack's two-round association, the lost-track buffer, and Camera Motion Compensation, which warps each track's Kalman prediction by the estimated camera motion before matching so the drone's panning does not cause the prediction to miss its detection. A synthetic moving-camera test shows the effect directly, and the submitted sequence shows the same: parked vehicles keep their IDs across the whole clip and the total number of IDs stays low relative to the number of vehicles present.
 
